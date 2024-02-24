@@ -380,7 +380,7 @@ public class StepDefinition {
 		
 		
 		firstElemnetInfo.click();	
-		firstElemnetInfo.clear();
+		//firstElemnetInfo.clear();
 	}
 	/**
 	 * This method returns a list of properties of first element <URL> <Description> <Price>.
@@ -443,10 +443,11 @@ public class StepDefinition {
 		 System.out.println("First Item Description-- "+itemsAttributes.get(1));
 		 itemsAttributes.get(2).equals(driver.findElement(By.xpath("//table[@class='a-lineitem a-align-top']/tbody/tr/td[2]")).getText());
 		 System.out.println("First Item Price-- "+itemsAttributes.get(2));
-			//Capture and place screenshot initially
-			WebElement selectedItemImage = driver.findElement(By.xpath("//img[@class = 'a-dynamic-image a-stretch-vertical' and @id = 'landingImage']"));
-			Shot_Item_Image = new AShot().takeScreenshot(driver,selectedItemImage);
-			ImageIO.write(Shot_Item_Image.getImage(),"png",new File("./ImageComparison/001addedItemImage.png"));
+
+//		 //Capture and place screenshot initially
+//			WebElement selectedItemImage = driver.findElement(By.xpath("//img[@class = 'a-dynamic-image a-stretch-vertical' and @id = 'landingImage']"));
+//			Shot_Item_Image = new AShot().takeScreenshot(driver,selectedItemImage);
+//			ImageIO.write(Shot_Item_Image.getImage(),"png",new File("./ImageComparison/001addedItemImage.png"));
 			
 			//BufferedImage ItemImage = Shot_Item_Image.getImage();
 
@@ -479,13 +480,13 @@ public class StepDefinition {
 	public void delivery_location_japan() throws InterruptedException {
 	   WebElement Location = driver.findElement(By.xpath("//span[contains(text(),'Deliver to')]"));
 	   Location.click();
-	   Thread.sleep(1000);	
+	   Thread.sleep(2000);	
 	   //Select Japan
 	   //radiogroup
 	 
 	   WebElement ChooseLocation = driver.findElement(By.xpath("//span[@class='a-button-text a-declarative' and @role='radiogroup']/span"));
 	   ChooseLocation.click();
-	   Thread.sleep(1000);
+	   Thread.sleep(2000);
 	   //Select Japan - delivered location from list box
 	   List<WebElement> Countries = driver.findElements(By.xpath("//ul[@class='a-nostyle a-list-link' and @role ='listbox']/li/a"));
 	   //Select Japan
@@ -556,16 +557,22 @@ public class StepDefinition {
 //		String timeStamp = new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
 //		ImageIO.write(FullPageScreenshot.getImage(), "png", new File("./Screenshot/"+timeStamp+"_FUllPageShot.png") );
 //		AddedCartItem = 
-		WebElement addedItemImage = driver.findElement(By.xpath("//img[@class='sc-product-image celwidget']"));
-
-		WebElement CartTooltipImage = driver.findElement(By.xpath("//img[@class='sc-product-image']"));
 		
-		Screenshot shot_addedItemImage = new AShot().takeScreenshot(driver,addedItemImage);
-		Screenshot shot_CartTooltipImage = new AShot().takeScreenshot(driver,CartTooltipImage);
-		
-		ImageIO.write(shot_addedItemImage.getImage(),"png",new File("./ImageComparison/addedItemImage.png"));
-		ImageIO.write(shot_CartTooltipImage.getImage(),"png",new File("./ImageComparison/shot_CartTooltipImage.png"));
+//		//FInalImage Verification
+//		
+//		WebElement addedItemImage = driver.findElement(By.xpath("//img[@class='sc-product-image celwidget']"));
+//
+//		WebElement CartTooltipImage = driver.findElement(By.xpath("//img[@class='sc-product-image']"));
+//		
+//		Screenshot shot_addedItemImage = new AShot().takeScreenshot(driver,addedItemImage);
+//		Screenshot shot_CartTooltipImage = new AShot().takeScreenshot(driver,CartTooltipImage);
+//		
+//		ImageIO.write(shot_addedItemImage.getImage(),"png",new File("./ImageComparison/addedItemImage.png"));
+//		ImageIO.write(shot_CartTooltipImage.getImage(),"png",new File("./ImageComparison/shot_CartTooltipImage.png"));
 
+		
+		
+		
 //		BufferedImage Image_CartItem = shot_addedItemImage.getImage();
 //		BufferedImage Image_ToolTipItem = shot_CartTooltipImage.getImage();
 //		
