@@ -193,35 +193,12 @@ public class StepDefinition {
 		int lastIndex = elementList.size()-1;//Array Indexing  for last element
 		System.out.println("Last Element Name - " + elementList.get(lastIndex).getText());
 		
-		
-//      To mimic Scroll Down Operation - not working Stale element error
-//		Actions actions = new Actions(driver);
-//		//Mouse hover
-//		actions.moveToElement(elementList.get(5)).contextClick();
-//		actions.scrollByAmount(0, 200);
-//		System.out.println("Scrolled final");
-//		driver.wait(10000);
-//		elementList.get(lastIndex).click();
-		
-					
-//		To mimic Scroll Down Operation - Execution using java script - not working Stale element error
-//		((JavascriptExecutor) driver).executeScript("arguments[0].scrollIntoView(true);", elementList.get(lastIndex));
-//		driver.wait(2);
-//		System.out.println("Scrolled");
-				
-
+	
 		if(elementList.get(lastIndex).isDisplayed())
 		{
 
-			System.out.println("Element not displayed on current view");
-//	      //To mimic Scroll Down Operation - not working
-//			Actions actions = new Actions(driver);
-//			//Mouse hover
-//			actions.moveToElement(elementList.get(0)).build().perform(); //Error - element not interactable: [object HTMLOptionElement] has no size and location
-//			actions.scrollByAmount(0, 200);
-//			System.out.println("Scrolled final");
-//			driver.wait(10000);
-			
+			System.out.println("Element displayed on current view");
+	
 		}
 			
 			
@@ -271,6 +248,7 @@ public class StepDefinition {
 	@Then("enter a valid text -K to search")
 	public void enter_a_valid_text_k_to_search() {
 		WebElement searchText = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
+		searchText.clear();
 		//Text to search
 		String TextToType = "k";
 		searchText.sendKeys(TextToType);
@@ -353,49 +331,40 @@ public class StepDefinition {
 		WebElement SearchedResult = driver.findElement(By.xpath("//div[@class = 's-no-outline' and @tabindex = 0]"));
 		System.out.println(SearchedResult.getText());		
 		SearchedResult.getText().equals("Results");
-		
-		
-		
-
 	    
 	}
 	
 	
 	
-	@And("click on first result to check out")
-	public void  click_on_first_result_to_check_out() throws InterruptedException {
+	@And("click on the item to check out")
+	public void  click_on_the_item_to_check_out() throws InterruptedException {
 		
 		//Capture item properties in to list
 		//Intended url
 		Thread.sleep(2000);
 		WebElement firstElemnetInfo = driver.findElement(By.xpath(
-				"//a[@class='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'][1]"
+				"(//a[@class='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'])[2]"
 				));
-		System.out.println(firstElemnetInfo);
-		
-//		WebDriverWait wait = new WebDriverWait(driver, 10);
-//		WebElement firstElemnetInfo = wait.until(ExpectedConditions.elementToBeClickable(By.xpath("//a[@class='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'][1]")));
-//		firstElemnetInfo.click();
-
-		
-		
+		//Click on Checkout
 		firstElemnetInfo.click();	
-		//firstElemnetInfo.clear();
 	}
+	
 	/**
-	 * This method returns a list of properties of first element <URL> <Description> <Price>.
-	 * 
-	 * @return A list of items - URL Description Price.
+	 * Example of Java Doc Creation
+	 * This method calculate properties of selected element in list "firstElemnetInfo" declared at class level <URL> <Description> <Price>.
+	 * Element 1 - Item URL
+	 * Element 2 - Item Description
+	 * Element 3 - Item Price
+	 * @return None
 	 * @throws IOException 
 	 */
 	
-	@And("Capture details of First Selected Element")
-	public void  Capture_details_of_First_Selected_Element() throws IOException {
+	@And("Capture details of Selected Element")
+	public void  Capture_details_of_Selected_Element() throws IOException {
 		
 		//Capture item properties in to list
-		//Intended url
 		WebElement firstElemnetInfo = driver.findElement(By.xpath(
-				"//a[@class='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'][1]"
+				"(//a[@class='a-link-normal s-underline-text s-underline-link-text s-link-style a-text-normal'])[2]"
 				));
 		//Item URL
 		String firstItemURL = firstElemnetInfo.getAttribute("href");
@@ -403,9 +372,7 @@ public class StepDefinition {
 		//Item Description
 		String firstItem_Description = firstElemnetInfo.getText();
 		System.out.println("First Item Description--"+firstItem_Description);
-		//Item Price
-		//String firstItem_Price = driver.findElement(By.xpath("//span[@class='a-offscreen'][1]")).getText();
-		// Create a JavascriptExecutor object
+		//For Item Price - Create a JavascriptExecutor object
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
 		// Execute the JavaScript code to get the text content of the span element
@@ -425,8 +392,6 @@ public class StepDefinition {
 		System.out.println(itemsAttributes.get(0));
 		System.out.println(itemsAttributes.get(1));
 		System.out.println(itemsAttributes.get(2));
-		
-		//return itemsAttributes;
 		
 				
 	}
@@ -481,13 +446,11 @@ public class StepDefinition {
 	   WebElement Location = driver.findElement(By.xpath("//span[contains(text(),'Deliver to')]"));
 	   Location.click();
 	   Thread.sleep(2000);	
-	   //Select Japan
-	   //radiogroup
 	 
 	   WebElement ChooseLocation = driver.findElement(By.xpath("//span[@class='a-button-text a-declarative' and @role='radiogroup']/span"));
 	   ChooseLocation.click();
 	   Thread.sleep(2000);
-	   //Select Japan - delivered location from list box
+	   //Select Japan - delivered location from list box for available delivery location
 	   List<WebElement> Countries = driver.findElements(By.xpath("//ul[@class='a-nostyle a-list-link' and @role ='listbox']/li/a"));
 	   //Select Japan
 	   for(int i = 0;i<Countries.size();i++)
@@ -496,12 +459,14 @@ public class StepDefinition {
 		   if(Countries.get(i).getText().equals("Japan"))
 		   {
 			   Countries.get(i).click();
+			   Thread.sleep(1000);
 			   break;
 			   
 		   }
 	   }
 	   Thread.sleep(1000);	
 	   driver.findElement(By.xpath("//button[@name='glowDoneButton']")).click();
+	   Thread.sleep(1000);
 	   
 	}
 
@@ -517,11 +482,8 @@ public class StepDefinition {
 		driver.getCurrentUrl().startsWith("https://www.amazon.com/cart/");
 		WebElement AddtoCartInfo = driver.findElement(By.xpath("//h1[contains(text(),'Added to Cart')]"));
 		AddtoCartInfo.getText().strip().equals("Added to Cart");
-		//Cart SubTotal Check
-		//span[@class='a-price sw-subtotal-amount']/span[1]
-		//WebElement CartSubTotal = driver.findElement(By.xpath("//span[@class='a-price sw-subtotal-amount']/span[1]"));
 		
-		// Create a JavascriptExecutor object
+		//For Price value - Create a JavascriptExecutor object
 				JavascriptExecutor js = (JavascriptExecutor) driver;
 
 				// Execute the JavaScript code to get the text content of the span element
@@ -533,15 +495,24 @@ public class StepDefinition {
 		
 		
 		System.out.println("Sub Total of Cart" + itemPrice);
+		//Item Price Comparison
+		itemPrice.equals(itemsAttributes.get(2));
+		
+		//Item Description Comparison
+		itemPrice.equals(itemsAttributes.get(1));
+		
+		
 		//Cart Item quantity Check
-		//div[@class='sc-without-multicart']
 		WebElement ItemQuantity = driver.findElement(By.xpath("//div[@class='sc-without-multicart']"));
 		System.out.println("Item Quantity - " + ItemQuantity.getText());
 		
 		//Cart Count on icon Check
-		//span[@id='nav-cart-count]
 		WebElement iconCartCount = driver.findElement(By.xpath("//div[@id='nav-cart-count-container']/span[1]"));
 		System.out.println("Item Count on Icon - " + iconCartCount.getText());
+		
+		//Item Count Cross Verification
+		(ItemQuantity.getText()).contains(iconCartCount.getText());
+		
 		
 		//Right Span Info Check - AddToCartImg and CartRightSpanImg
 		
@@ -621,7 +592,7 @@ public class StepDefinition {
 	if (!driver.getCurrentUrl().toLowerCase().startsWith("https://www.amazon.com/cart/", 0)){
 	    
 	} else {
-	    System.out.println("Test Fail, Website stille on current page");
+	    System.out.println("Test Fail, Website still on current page");
 	}
 	
 			
