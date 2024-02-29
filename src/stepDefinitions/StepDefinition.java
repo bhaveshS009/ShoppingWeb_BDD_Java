@@ -49,9 +49,10 @@ public class StepDefinition {
 	    WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
 	    searchTextBox.click();
 	    //Single Text Search Check k i n D L
-	    
+	    searchTextBox.clear();
 	    searchTextBox.sendKeys("K");
-	    System.out.println("when executed");
+	    searchTextBox.getAttribute("value").equals("K");
+	    System.out.println("Searched text visble correctly");
 	  
 	   
 	    
@@ -128,7 +129,8 @@ public class StepDefinition {
 	public void user_click_on_all_departments() {
 		  //Element all department
 				WebElement AllDepartmeterFiltter = driver.findElement(By.xpath("//select[@id = 'searchDropdownBox']"));
-						AllDepartmeterFiltter.click();
+				AllDepartmeterFiltter.isDisplayed();		
+				AllDepartmeterFiltter.click();
 	    
 	}
 
@@ -234,12 +236,14 @@ public class StepDefinition {
 		driver.get("https://www.amazon.com/");
 		driver.manage().window().maximize();
 		String actual_URL = driver.getCurrentUrl();//https://www.amazon.com/
+		actual_URL.contains("www.amazon.com");
 		Thread.sleep(20000);
 		driver.navigate().refresh();
 		//thread.sleep(10000);
 		String webTittle = driver.getTitle();//Amazon.com. Spend less. Smile more.
-		System.out.println(actual_URL + webTittle);
-		
+		webTittle.equals("Amazon.com. Spend less. Smile more.");
+		System.out.println("Web Url -> " + actual_URL);
+		System.out.println("Web Tittle -> " + webTittle);
 	    
 	    
 	}
@@ -252,6 +256,7 @@ public class StepDefinition {
 		//Text to search
 		String TextToType = "k";
 		searchText.sendKeys(TextToType);
+		searchText.getAttribute(TextToType);
 		if (searchText.getAttribute("value") == TextToType )
 		{
 			System.out.println("Entered text is visible");
@@ -264,7 +269,9 @@ public class StepDefinition {
 	
 	@Then("click on item search")
 	public void click_on_item_search() {
-		driver.findElement(By.id("nav-search-submit-button")).click();
+		WebElement btnSearch = driver.findElement(By.id("nav-search-submit-button"));
+		btnSearch.isDisplayed();
+		btnSearch.click();
 	    
 	}
 	
@@ -288,8 +295,8 @@ public class StepDefinition {
 		driver.findElement(By.cssSelector("#nav-logo-sprites")).click();
 	}
 	
-	@Then("Web Site should lend on home page")
-	public void web_site_should_lend_on_home_page() {
+	@Then("Web Site should land on home page")
+	public void web_site_should_land_on_home_page() {
 	    driver.getCurrentUrl().equals("https://www.amazon.com/ref=nav_logo");
 	    
 	    
@@ -300,7 +307,7 @@ public class StepDefinition {
 	public void user_enters_some_invalid_text_to_search() {
 		    WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
 		    searchTextBox.click();
-		    
+		    searchTextBox.clear();
 		    searchTextBox.sendKeys("2kjdojas09duq32ejoawjdosijd093ueoiasjdksjadh");
 		    System.out.println("Invalid Search executed");
 
@@ -321,8 +328,9 @@ public class StepDefinition {
 	public void user_enters_a_valid_item_to_search() {
 		WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
 	    searchTextBox.click();
-	    
+	    searchTextBox.clear();
 	    searchTextBox.sendKeys("Kindle");
+	    searchTextBox.getAttribute("value");
 	    System.out.println("Valid Search executed"); 
 	}
 	
