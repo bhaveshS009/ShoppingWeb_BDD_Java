@@ -3,6 +3,7 @@ package stepDefinitions;
 import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
+import io.cucumber.java.en.And;
 import io.github.bonigarcia.wdm.WebDriverManager;
 import ru.yandex.qatools.ashot.AShot;
 import ru.yandex.qatools.ashot.Screenshot;
@@ -20,6 +21,7 @@ import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.SocketException;
 import java.text.SimpleDateFormat;
 
 import org.apache.commons.io.FileUtils;
@@ -34,7 +36,6 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-import io.cucumber.java.en.And;
 
 public class StepDefinition {
 	
@@ -44,31 +45,37 @@ public class StepDefinition {
 	private List<String> itemsAttributes;
 	private Screenshot Shot_Item_Image;
 	
-	@When("User enters some text to search")
-	public void user_enters_some_text_to_search() {
+	
+	
+
+	@When("User enters {string} to search")
+	public void user_enters_to_search(String item) {
 	    WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
 	    searchTextBox.click();
 	    //Single Text Search Check k i n D L
 	    searchTextBox.clear();
-	    searchTextBox.sendKeys("K");
-	    searchTextBox.getAttribute("value").equals("K");
-	    System.out.println("Searched text visble correctly");
+	    searchTextBox.sendKeys(item);
+	    searchTextBox.isDisplayed();
+	    searchTextBox.getAttribute("value").equals(item);
+	    System.out.println("Searched item - "+ item + "visble correctly");
 	  
 	   
 	    
 	}
 
-	@Then("Wild Card search should be executed according to input provided")
-	public void wild_card_search_should_be_executed_according_to_input_provided() throws InterruptedException {
+	
+	
+	@Then("Wild Card search should be executed according to {string} provided")
+	public void wild_card_search_should_be_executed_according_to_provided(String item) throws InterruptedException {
 		Thread.sleep(5000); 
 		List <WebElement> suggestedList = driver.findElements(By.xpath("//div[@class= 's-suggestion-container']/div"));
-		 char character = 'k';   
+		 String itemName = item.toLowerCase();   
 		 System.out.println("Total number of suggested items for text entry - " + suggestedList.size());
 		 for(int i =0;i<suggestedList.size();i++)
 		    {
 			 
 			 String suggestedName = suggestedList.get(i).getText();
-		    	if (suggestedList.get(i).getText().charAt(0) == character)
+		    	if (suggestedName.toLowerCase().contains(itemName))
 		    		{ 
 		    		System.out.println("Contains the text "+ suggestedName);		
 		    		}
@@ -76,6 +83,8 @@ public class StepDefinition {
 		    		{
 		    		System.out.println("else");
 		    			System.out.println("Test is failed");
+		    			System.out.println("Item Name Forwarded" + itemName);
+		    			System.out.println("Actual Item - " + suggestedList.get(i).getText());
 		    		}
 		    	
 		    }
@@ -83,6 +92,8 @@ public class StepDefinition {
 	    
 	}
 
+	
+	
 	@Given("On search box all defined department grouping provided")
 	public void on_search_box_all_defined_department_grouping_provided() {
 	  
@@ -145,7 +156,7 @@ public class StepDefinition {
 	    	if (ListAllDepartments.get(k).getText().equals(PreDefinedList[k]))
 			{
 	    		
-			//System.out.println("List elements are matched with predefined");
+			System.out.println("List elements are matched with predefined");
 			}
 	    	
 	    	else
@@ -239,7 +250,6 @@ public class StepDefinition {
 		actual_URL.contains("www.amazon.com");
 		Thread.sleep(20000);
 		driver.navigate().refresh();
-		//thread.sleep(10000);
 		String webTittle = driver.getTitle();//Amazon.com. Spend less. Smile more.
 		webTittle.equals("Amazon.com. Spend less. Smile more.");
 		System.out.println("Web Url -> " + actual_URL);
@@ -249,23 +259,6 @@ public class StepDefinition {
 	}
 
 
-	@Then("enter a valid text -K to search")
-	public void enter_a_valid_text_k_to_search() {
-		WebElement searchText = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
-		searchText.clear();
-		//Text to search
-		String TextToType = "k";
-		searchText.sendKeys(TextToType);
-		searchText.getAttribute(TextToType);
-		if (searchText.getAttribute("value") == TextToType )
-		{
-			System.out.println("Entered text is visible");
-		}
-		else
-		{
-			System.out.println("Test Fail");
-		}
-	}
 	
 	@Then("click on item search")
 	public void click_on_item_search() {
@@ -275,10 +268,10 @@ public class StepDefinition {
 	    
 	}
 	
-	@Then("search Sucessfully Executed")
-	public void search_sucessfully_executed() {
+	@Then("search {string} Sucessfully Executed")
+	public void search_sucessfully_executed(String item) {
 	    //Verification of Search executed
-		driver.getCurrentUrl().contains("K");
+		driver.getCurrentUrl().contains(item);
 		driver.findElement(By.xpath("//div[@class='s-no-outline']/span")).getText().toLowerCase().contains("results");
 	}
 
@@ -323,16 +316,6 @@ public class StepDefinition {
 		
 	}
 
-	
-	@Given("User enters a valid item to search")
-	public void user_enters_a_valid_item_to_search() {
-		WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
-	    searchTextBox.click();
-	    searchTextBox.clear();
-	    searchTextBox.sendKeys("Kindle");
-	    searchTextBox.getAttribute("value");
-	    System.out.println("Valid Search executed"); 
-	}
 	
 	@Then("results are displayed")
 	public void results_are_displayed() {
@@ -449,8 +432,10 @@ public class StepDefinition {
 		}
 	}
 	
-	@Then("Delivery Location Japan")
-	public void delivery_location_japan() throws InterruptedException {
+
+	
+	@Then("Delivery Location {string}")
+	public void delivery_location_(String countryName) throws InterruptedException {
 	   WebElement Location = driver.findElement(By.xpath("//span[contains(text(),'Deliver to')]"));
 	   Location.click();
 	   Thread.sleep(2000);	
@@ -464,7 +449,7 @@ public class StepDefinition {
 	   for(int i = 0;i<Countries.size();i++)
 	   {
 		   
-		   if(Countries.get(i).getText().equals("Japan"))
+		   if(Countries.get(i).getText().equals(countryName))
 		   {
 			   Countries.get(i).click();
 			   Thread.sleep(1000);
@@ -477,6 +462,7 @@ public class StepDefinition {
 	   Thread.sleep(1000);
 	   
 	}
+	
 
 	@Then("add item to cart")
 	public void add_item_to_cart() throws InterruptedException {
@@ -605,7 +591,14 @@ public class StepDefinition {
 	
 			
 	}
-	
+
+	@Then ("Close the Web Browser")
+	public void Close_the_Web_Browser() throws SocketException {
+			// Close the browser
+            driver.quit();
+            System.out.println("Browser closed");
+		
+	}
 	
 
 }
