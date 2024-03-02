@@ -3,6 +3,8 @@
 Project : Automation of checkout flow verification
 of "AMAZON" website
 
+---------------------------------------------
+
 Framework              : Cucumber-BDD,TestNG
 
 Language               : Java-11,Gherkin
@@ -17,4 +19,4 @@ Dependaency Management : Maven
 provide it manually.Intentially 2 sec. delay is provided
 to handle this kind of situation  🙂
 
-Thannks for you Time, Happy Coding 🥇
+Thanks for you Time, Happy Coding 🥇
