@@ -38,6 +38,11 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+import com.aventstack.extentreports.ExtentReports;
+import com.aventstack.extentreports.ExtentTest;
+import com.aventstack.extentreports.reporter.ExtentSparkReporter;
+import com.aventstack.extentreports.reporter.configuration.Theme;
+
 
 public class StepDefinition {
 	
@@ -47,9 +52,41 @@ public class StepDefinition {
 	private List<String> itemsAttributes;
 	private Screenshot Shot_Item_Image;
 	
+	public static ExtentSparkReporter spark;
+	public static ExtentReports extent = new ExtentReports();
+	public static ExtentTest logger;
 	
+	@Before
+	public void SparkReporterHandling(){
+	spark = new ExtentSparkReporter("./TestReports/Sparkreport.html");
+	spark.config().setTheme(Theme.STANDARD);
+	extent.attachReporter(spark);
 	
-
+	}
+	
+	@Given("Amazon web laucnhed")
+	public void given_amazon_web_laucnhed() throws InterruptedException {
+		logger = extent.createTest("Amazon.com web Checkout feature verification");
+		
+		
+		WebDriverManager.chromedriver().setup();
+		
+		driver = new ChromeDriver();
+		driver.manage().window().maximize();
+		driver.get("https://www.amazon.com/");
+		logger.info("Launching Amamzon.com web site.....");
+		String actual_URL = driver.getCurrentUrl();//https://www.amazon.com/
+		actual_URL.contains("www.amazon.com");
+		Thread.sleep(20000);
+		driver.navigate().refresh();
+		String webTittle = driver.getTitle();//Amazon.com. Spend less. Smile more.
+		webTittle.equals("Amazon.com. Spend less. Smile more.");
+		System.out.println("Web Url -> " + actual_URL);
+		System.out.println("Web Tittle -> " + webTittle);
+	    logger.pass("Webpage launch & Verified");
+	    
+	}
+	
 	@When("User enters {string} to search")
 	public void user_enters_to_search(String item) {
 	    WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
@@ -59,20 +96,20 @@ public class StepDefinition {
 	    searchTextBox.sendKeys(item);
 	    searchTextBox.isDisplayed();
 	    searchTextBox.getAttribute("value").equals(item);
-	    System.out.println("Searched item - "+ item + "visble correctly");
-	  
+	    System.out.println("Searched item - "+ item + " visible correctly");
+	    logger.pass("Searched item - "+ item + " visible correctly");
 	   
 	    
 	}
 
-	
-	
 	@Then("Wild Card search should be executed according to {string} provided")
 	public void wild_card_search_should_be_executed_according_to_provided(String item) throws InterruptedException {
 		Thread.sleep(5000); 
 		List <WebElement> suggestedList = driver.findElements(By.xpath("//div[@class= 's-suggestion-container']/div"));
 		 String itemName = item.toLowerCase();   
-		 System.out.println("Total number of suggested items for text entry - " + suggestedList.size());
+		 System.out.println("Total number of suggested items displayed against searched text - " + suggestedList.size());
+		 logger.info("Total number of suggested items displayed against searched text - " + suggestedList.size());
+		 int misMatchCount= 0;
 		 for(int i =0;i<suggestedList.size();i++)
 		    {
 			 
@@ -83,14 +120,17 @@ public class StepDefinition {
 		    		}
 		    	else
 		    		{
-		    		System.out.println("else");
+		    		
 		    			System.out.println("Test is failed");
 		    			System.out.println("Item Name Forwarded" + itemName);
 		    			System.out.println("Actual Item - " + suggestedList.get(i).getText());
+		    			misMatchCount++;
+		    			logger.fail("Suggested Items name mis-matched for - "+ itemName);
 		    		}
 		    	
 		    }
-	    
+	    if (misMatchCount==0);
+	    logger.pass("All suggested items matches from the input search "+ itemName );
 	    
 	}
 
@@ -144,6 +184,7 @@ public class StepDefinition {
 				WebElement AllDepartmeterFiltter = driver.findElement(By.xpath("//select[@id = 'searchDropdownBox']"));
 				AllDepartmeterFiltter.isDisplayed();		
 				AllDepartmeterFiltter.click();
+				logger.info("All departments list displayed on search bar");
 	    
 	}
 
@@ -151,14 +192,15 @@ public class StepDefinition {
 	public List<WebElement> list_of_all_defined_department_appears() {
 		//ListAllDepartments = new WebElement[]driver.findElements(By.xpath("//select[@id='searchDropdownBox']/option"));
 		ListAllDepartments = driver.findElements(By.xpath("//select[@id='searchDropdownBox']/option"));
-	    for(int k=0;k<ListAllDepartments.size();k++) 
+	    int unmatchedCount = 0;
+		for(int k=0;k<ListAllDepartments.size();k++) 
 	    {
 	    	
 	    	//Designed list elements matching
 	    	if (ListAllDepartments.get(k).getText().equals(PreDefinedList[k]))
 			{
 	    		
-			System.out.println("List elements are matched with predefined");
+			//System.out.println("List elements are matched with predefined");
 			}
 	    	
 	    	else
@@ -167,12 +209,19 @@ public class StepDefinition {
 	    	
 	    				+ PreDefinedList[k]
 	    				+ "actual value -"
-	    				+ ListAllDepartments.get(k).getText()
-	    				
-	    				);
-	    	}
-	    		    	
+	    				+ ListAllDepartments.get(k).getText());
+	    		
+	    		unmatchedCount++;
+	    		logger.fail("\"Implementation Gap in predined value - \"\r\n"
+	    				+ "	    	\r\n"
+	    				+ "	    				+ PreDefinedList[k]\r\n"
+	    				+ "	    				+ \"actual value -\"");
+	    	}			
+	    		    		    	
 	    }	
+		if (unmatchedCount == 0);
+    	System.out.println("All elements are matched with predefined element list");
+    	logger.pass("All elements are matched with predefined element list");
 	    return ListAllDepartments;
 	}
 
@@ -186,6 +235,7 @@ public class StepDefinition {
 	    
 		System.out.println("First Element Name - " + elementList.get(1).getText());
 		elementList.get(1).isDisplayed();
+		logger.pass("First Department Name -"+elementList.get(1)+"displayed on current view");
 		if(elementList.get(1).isEnabled())
 		{
 			//Click Operation
@@ -194,6 +244,7 @@ public class StepDefinition {
 		else
 		{
 			System.out.println("Test is Failed");
+			logger.fail("Unable to acces the first department name "+ elementList.get(1).getText() +"for the search");
 			
 		}
 		
@@ -207,13 +258,16 @@ public class StepDefinition {
 		
 		int lastIndex = elementList.size()-1;//Array Indexing  for last element
 		System.out.println("Last Element Name - " + elementList.get(lastIndex).getText());
+		elementList.get(lastIndex).isDisplayed();
+		logger.pass("Last Department Name -"+elementList.get(lastIndex)+"displayed on current view");
 		
 	
-		if(elementList.get(lastIndex).isDisplayed())
+		if(elementList.get(lastIndex).isEnabled())
 		{
+			//Click Operation
+			elementList.get(lastIndex).click();
 
 			System.out.println("Element displayed on current view");
-	
 		}
 			
 			
@@ -226,6 +280,7 @@ public class StepDefinition {
 		else
 		{
 			System.out.println("Test is Failed");
+			logger.fail("Unable to acces the last department name "+ elementList.get(lastIndex).getText() +"for the search");
 			
 		}
 		
@@ -240,24 +295,7 @@ public class StepDefinition {
 	}
 
 
-	@Given("Amazon web laucnhed")
-	public void given_amazon_web_laucnhed() throws InterruptedException {
-		WebDriverManager.chromedriver().setup();
-		
-		driver = new ChromeDriver();
-		driver.get("https://www.amazon.com/");
-		driver.manage().window().maximize();
-		String actual_URL = driver.getCurrentUrl();//https://www.amazon.com/
-		actual_URL.contains("www.amazon.com");
-		Thread.sleep(20000);
-		driver.navigate().refresh();
-		String webTittle = driver.getTitle();//Amazon.com. Spend less. Smile more.
-		webTittle.equals("Amazon.com. Spend less. Smile more.");
-		System.out.println("Web Url -> " + actual_URL);
-		System.out.println("Web Tittle -> " + webTittle);
-	    
-	    
-	}
+
 
 
 	
@@ -266,6 +304,7 @@ public class StepDefinition {
 		WebElement btnSearch = driver.findElement(By.id("nav-search-submit-button"));
 		btnSearch.isDisplayed();
 		btnSearch.click();
+		logger.info("Item search executing...");
 	    
 	}
 	
@@ -274,6 +313,7 @@ public class StepDefinition {
 	    //Verification of Search executed
 		driver.getCurrentUrl().contains(item);
 		driver.findElement(By.xpath("//div[@class='s-no-outline']/span")).getText().toLowerCase().contains("results");
+		logger.pass("Search result appeared");
 	}
 
 	
@@ -281,18 +321,19 @@ public class StepDefinition {
 	@Given("Amazon icon label visible on page")
 	public void amazon_icon_label_visible_on_page() {
 	   driver.findElement(By.cssSelector("#nav-logo-sprites")).isDisplayed();
-	   
+	   logger.info("Amazon icon visible on webpage");
 	}
 	
 	@When("click on Amazon icon")
 	public void click_on_amazon_icon() {
 		driver.findElement(By.cssSelector("#nav-logo-sprites")).click();
+		logger.info("Click on Amzon Icon executed");
 	}
 	
 	@Then("Web Site should land on home page")
 	public void web_site_should_land_on_home_page() {
 	    driver.getCurrentUrl().equals("https://www.amazon.com/ref=nav_logo");
-	    
+	    logger.pass("Web lands on home page");
 	    
 	}
 	
@@ -300,10 +341,12 @@ public class StepDefinition {
 	@When("User enters some invalid text to search")
 	public void user_enters_some_invalid_text_to_search() {
 		    WebElement searchTextBox = driver.findElement(By.xpath("//input[@id='twotabsearchtextbox']"));
+		    String invalidText = "2kjdojas09duq32ejoawjdosijd093ueoiasjdksjadh";
 		    searchTextBox.click();
 		    searchTextBox.clear();
-		    searchTextBox.sendKeys("2kjdojas09duq32ejoawjdosijd093ueoiasjdksjadh");
+		    searchTextBox.sendKeys(invalidText);
 		    System.out.println("Invalid Search executed");
+		    logger.info("Invalid Search - " + invalidText+" executed");
 
 	}
 	
@@ -313,7 +356,7 @@ public class StepDefinition {
 		WebElement SearchedResult = driver.findElement(By.xpath("(//div[@class = 's-no-outline' and @tabindex = 0]/div)[1]"));
 		System.out.println(SearchedResult.getText());		
 		SearchedResult.getText().contains("No results for");
-		
+		logger.pass("No result for the invalid search text");
 		
 	}
 
@@ -323,6 +366,7 @@ public class StepDefinition {
 		WebElement SearchedResult = driver.findElement(By.xpath("//div[@class = 's-no-outline' and @tabindex = 0]"));
 		System.out.println(SearchedResult.getText());		
 		SearchedResult.getText().equals("Results");
+		logger.pass("Search Results are displayed");
 	    
 	}
 	
@@ -339,6 +383,7 @@ public class StepDefinition {
 				));
 		//Click on Checkout
 		firstElemnetInfo.click();	
+		logger.info("clicked on the item to check out");
 	}
 	
 	/**
@@ -361,9 +406,11 @@ public class StepDefinition {
 		//Item URL
 		String firstItemURL = firstElemnetInfo.getAttribute("href");
 		System.out.println("First Item URL--"+firstItemURL);
+		logger.info("<b>"+"First Item URL--"+"</b>"+firstItemURL);
 		//Item Description
 		String firstItem_Description = firstElemnetInfo.getText();
 		System.out.println("First Item Description--"+firstItem_Description);
+		logger.info("<b>"+"First Item Description--"+"</b>"+firstItem_Description);
 		//For Item Price - Create a JavascriptExecutor object
 		JavascriptExecutor js = (JavascriptExecutor) driver;
 
@@ -375,7 +422,7 @@ public class StepDefinition {
 
 		//Selected item price		
 		System.out.println("First Item Price-- "+itemPrice);
-		
+		logger.info("<b>"+"First Item Price-- "+"</b>"+itemPrice);
 		itemsAttributes = new ArrayList<>(); // Initialize the class-level field
 		itemsAttributes.add(firstItemURL);
 		itemsAttributes.add(firstItem_Description);
@@ -384,7 +431,6 @@ public class StepDefinition {
 		System.out.println(itemsAttributes.get(0));
 		System.out.println(itemsAttributes.get(1));
 		System.out.println(itemsAttributes.get(2));
-		
 				
 	}
 
@@ -395,11 +441,11 @@ public class StepDefinition {
 		Thread.sleep(2000);
 		 //List <String> itemAttributes = this.Capture_details_of_First_Selected_Element();
 		itemsAttributes.get(0).equals(driver.getCurrentUrl());
-		 System.out.println("First Item URL-- "+itemsAttributes.get(0));
+		 System.out.println("<b><h3>"+"First Item URL-- "+itemsAttributes.get(0)+"</h3></b>");
 		 itemsAttributes.get(1).equals(driver.findElement(By.xpath("//span[@id='productTitle']")).getText());
-		 System.out.println("First Item Description-- "+itemsAttributes.get(1));
+		 System.out.println("<b><h3>"+"First Item Description-- "+itemsAttributes.get(1)+"</h3></b>");
 		 itemsAttributes.get(2).equals(driver.findElement(By.xpath("//table[@class='a-lineitem a-align-top']/tbody/tr/td[2]")).getText());
-		 System.out.println("First Item Price-- "+itemsAttributes.get(2));
+		 System.out.println("<b><h3>"+"First Item Price-- "+itemsAttributes.get(2)+"</h3></b>");
 
 //		 //Capture and place screenshot initially
 //			WebElement selectedItemImage = driver.findElement(By.xpath("//img[@class = 'a-dynamic-image a-stretch-vertical' and @id = 'landingImage']"));
@@ -408,7 +454,7 @@ public class StepDefinition {
 			
 			//BufferedImage ItemImage = Shot_Item_Image.getImage();
 
-	
+		 logger.pass("The product page of selected item verified");
 	
 	}
 		
@@ -419,6 +465,7 @@ public class StepDefinition {
 		if(!AddToCart.isSelected())
 		{
 		System.out.println("Element not enabled");
+		logger.pass("Add to cart disabled for undeliverable location");
 		//Mouse Hover Action
 		Actions action = new Actions(driver);
 		action.moveToElement(AddToCart).click().perform();
@@ -430,6 +477,7 @@ public class StepDefinition {
 		//Verify
 		definedMessage.equals(ErrorOnWeb.strip());
 		driver.findElement(By.xpath("//span[@class='a-color-error'][1]")).getText().contains("cannot be shipped");
+		logger.info("Web User unable to checkout of undeliverable product");
 		}
 	}
 	
@@ -461,6 +509,7 @@ public class StepDefinition {
 	   Thread.sleep(1000);	
 	   driver.findElement(By.xpath("//button[@name='glowDoneButton']")).click();
 	   Thread.sleep(1000);
+	   logger.info("Item deliver location changed to deliverable country - "+countryName);
 	   
 	}
 	
@@ -469,6 +518,7 @@ public class StepDefinition {
 	public void add_item_to_cart() throws InterruptedException {
 		Thread.sleep(4000);	
 		driver.findElement(By.xpath("//input[@id='add-to-cart-button']")).click();			
+		logger.info("Item added to cart sucessfully");
 	}
 
 
@@ -507,7 +557,7 @@ public class StepDefinition {
 		
 		//Item Count Cross Verification
 		(ItemQuantity.getText()).contains(iconCartCount.getText());
-		
+		logger.pass("<b><h3>"+"Product price, details and quantitly is verified"+"</h3></b>");
 		
 		//Right Span Info Check - AddToCartImg and CartRightSpanImg
 		
@@ -581,6 +631,7 @@ public class StepDefinition {
 	btnCheckOut.getAttribute("value").equals("Proceed to checkout");
 	btnCheckOut.isSelected();
 	btnCheckOut.click();
+	logger.info("Item Proceed to checkout");
 	Thread.sleep(1000);
 	
 			
@@ -588,6 +639,7 @@ public class StepDefinition {
 	    
 	} else {
 	    System.out.println("Test Fail, Website still on current page");
+	    logger.fail("Test Fail, Website still on current page");
 	}
 	
 			
@@ -598,8 +650,13 @@ public class StepDefinition {
 			// Close the browser
             driver.quit();
             System.out.println("Browser closed");
-		
 	}
 	
+    @After
+    public void ReporterClosure() {
+    	System.out.println("Browser closed");
+    	 extent.flush();
+     }
 
+	
 }
