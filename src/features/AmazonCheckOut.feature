@@ -1,12 +1,8 @@
 Feature: Functionality testing of Add to Cart feature on Amazon.com Website
-
-
+@FunctionalTest
 Scenario Outline: Check the Wild Cart Search should function according to input provided
-Background:
 Given Amazon web laucnhed
-Scenario Outline: Check the Wild Cart Search should function according to input provided
 When User enters "<item>" to search
-#Then Wild Card search should be executed according to input provided
 Then Wild Card search should be executed according to "<item>" provided
 Examples:
 |item		|
@@ -15,13 +11,13 @@ Examples:
 |Shirt	|
 |Shoe		|
 
-
+@SearchItem
 Scenario: On Search box departments list should be displayed according to pre defined departments
 Given On search box all defined department grouping provided
 When User click on All departments
 Then list of all defined department appears
 
-
+@SearchItem
 Scenario: Checksearch feature with first department list name
 Given On search box all defined department grouping provided
 When User click on All departments
